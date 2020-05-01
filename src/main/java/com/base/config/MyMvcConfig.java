@@ -1,6 +1,5 @@
 package com.base.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +10,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -29,15 +26,7 @@ public class MyMvcConfig implements WebMvcConfigurer {
     private String imagePath;
     @Value("${project.uploadPath}")
     private String filePath;
-    @Value("${spring.thymeleaf.template-resolver-order}")
-    private  int thymeleafTemplateResolverorder;
-    @Value("${spring.freemarker.template-resolver-order}")
-    private  int freemarkerTemplateResolverorder;
-    @Autowired
-    private ThymeleafViewResolver thymeleafViewResolver;
 
-    @Autowired
-    private FreeMarkerViewResolver freeMarkerViewResolver;
     /**
      * 配置编码格式
      * @return
@@ -62,9 +51,8 @@ public class MyMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
-        registry.addResourceHandler("/plugin/**", "/static/**")
-                .addResourceLocations("classpath:/plugin/", "classpath:/static/");
+        // pathPatterns 表示在磁盘目录下的所有资源会被解析为以下 file 路径
+        registry.addResourceHandler("/resource/**").addResourceLocations("/WEB-INF/static/");
         registry.addResourceHandler("/ftl/**").addResourceLocations("classpath:/ftl/");
         registry.addResourceHandler("/images/**").addResourceLocations("file:" + imagePath);
         registry.addResourceHandler("/img/**").addResourceLocations("file:" + imagePath);
