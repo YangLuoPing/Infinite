@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * 阿里连接池 废弃配置类配置
+ * 配置Druid监控  访问地址 http://localhost:8080/druid/login.html
  */
 //@Configuration
 public class DruidConfig {

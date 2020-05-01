@@ -28,8 +28,10 @@ spring:
           loginPassword: root #后台管理界面的登录密码
           allow:  # 为空或者为null时，表示允许所有访问
         web-stat-filter:
-          enabled: true
-          exclusions: /jdbc/*,*.js,*.css,/druid/* #设置哪些请求进行过滤排除掉，从而不进行统计
+          # 添加过滤规则
+          url-pattern: /druid/*
+          # 忽略过滤格式
+          exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
         # 连接池的配置信息
         # 初始化大小，最小，最大
         initial-size: 5
@@ -82,10 +84,24 @@ spring:
     maxPoolPreparedStatementPerConnectionSize: 20
     useGlobalDataSourceStat: true
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+    url: jdbc:mysql://localhost:3308/origin?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
   freemarker:
     cache: false
+    charset: UTF-8
+    content-type: text/html
+    suffix: .ftl
+    template-loader-path: classpath:/ftl/
+    check-template-location: true
   thymeleaf:  # 模板引擎thymeleaf
     cache: false  # 热部署
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    template-resolver-order: 1
 
 #mybatis plus 设置
 mybatis-plus:
@@ -112,13 +128,11 @@ HASOR_DATAQL_DATAWAY_UI_URL: /dataway-ui/
 
 
 
-
-
-
-
 project:
-  path:
-    upload: D:\
+  uploadPath: ./file/
+  imagePath: ./image/
+  isDayType: false
+
 
 
 # yml练习
