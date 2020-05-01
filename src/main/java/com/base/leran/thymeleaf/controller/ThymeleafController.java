@@ -23,6 +23,6 @@ public class ThymeleafController {
         model.addAttribute("names", allNames);
         model.addAttribute("ids", allIds);
         model.addAttribute("mydate", new java.util.Date());
-        return "learn/thymeleaf/test1";
+        return "learn/thymeleaf/demo01";
     }
 }
