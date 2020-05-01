@@ -5,6 +5,7 @@ import net.hasor.spring.boot.EnableHasor;
 import net.hasor.spring.boot.EnableHasorWeb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -24,7 +25,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * return EnableAutoConfiguration.class; 加载配置
  * 配置的核心文件 META-INF/spring.factories.（spring-boot-autoconfigure）
  */
-@SpringBootApplication(exclude = DruidDataSourceAutoConfigure.class) //排除 原生Druid的快速配置类。
+//, DataSourceAutoConfiguration.class
+@SpringBootApplication(exclude ={DruidDataSourceAutoConfigure.class} ) //排除 原生Druid的快速配置类。
+@ServletComponentScan//druid监控页面是一个servlet，需要让SpingBoot支持servlet
 @EnableAsync //开启异步注解功能
 @EnableScheduling //开启基于注解的定时任务
 @EnableHasor()      // 在Spring 中启用 Hasor
