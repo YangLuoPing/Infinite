@@ -1,5 +1,6 @@
 package com.base.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +11,8 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -31,7 +29,19 @@ public class MyMvcConfig implements WebMvcConfigurer {
     private String imagePath;
     @Value("${project.uploadPath}")
     private String filePath;
+    @Value("${spring.thymeleaf.template-resolver-order}")
+    private  int thymeleafTemplateResolverorder;
+    @Value("${spring.freemarker.template-resolver-order}")
+    private  int freemarkerTemplateResolverorder;
+    @Autowired
+    private ThymeleafViewResolver thymeleafViewResolver;
 
+    @Autowired
+    private FreeMarkerViewResolver freeMarkerViewResolver;
+    /**
+     * 配置编码格式
+     * @return
+     */
     @Bean
     public HttpMessageConverter<String> responseBodyConverter() {
         StringHttpMessageConverter converter = new StringHttpMessageConverter(Charset.forName("UTF-8"));
@@ -78,63 +88,39 @@ public class MyMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor());
+        registry.addInterceptor(new MyHanderConfig()).addPathPatterns("/**") //拦截
+                .excludePathPatterns("/index.html", "/", "login.html", "/layuiadmin/**", "/interface-ui/**", "/view/**", "/img/**");//排除
     }
 
-    /**
+
+    @Bean
+    public InternalResourceViewResolver htmlViewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/");
+        viewResolver.setViewClass(HandleResourceViewExists.class); //设置检查器
+        viewResolver.setSuffix(".html");
+        viewResolver.setOrder(0);
+        viewResolver.setContentType("text/html;charset=UTF-8");
+        return viewResolver;
+    }
+   /* *//**
      * jsp视图解析
      *
      * @return
      * @Title: viewResolver
-     * @Description: TODO
+     * @Description: JSP解析器
      * @Date 2018年8月28日 下午4:46:07
      * @author OnlyMate
-     */
+     *//*
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(HandleResourceViewExists.class); //设置检查器
         viewResolver.setPrefix("/WEB-INF/");
         viewResolver.setSuffix(".jsp");
-        viewResolver.setViewNames("jsp/*");  //重要 setViewNames 通过它识别为jsp页面引擎
-        viewResolver.setViewClass(JstlView.class); // 这个属性通常并不需要手动配置，高版本的Spring会自动检测
+        viewResolver.setOrder(0);
+        viewResolver.setContentType("text/html;charset=UTF-8");
         return viewResolver;
-    }
-
-    /**
-     * @Description: 注册html视图解析器
-     */
-    @Bean
-    public ITemplateResolver templateResolver() {
-        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setTemplateMode("HTML");
-        templateResolver.setPrefix("classpath:/templates/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setCharacterEncoding("utf-8");
-        templateResolver.setCacheable(false);
-        return templateResolver;
-    }
-
-    /**
-     * @Description: 将自定义tml视图解析器添加到模板引擎并主持到ioc
-     */
-    @Bean
-    public SpringTemplateEngine templateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver());
-        return templateEngine;
-    }
-    /**
-     * @Description: Thymeleaf视图解析器配置
-     */
-    @Bean
-    public ThymeleafViewResolver viewResolverThymeLeaf() {
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
-        viewResolver.setTemplateEngine(templateEngine());
-        viewResolver.setCharacterEncoding("utf-8");
-        viewResolver.setViewNames(new String[]{"thymeleaf"});
-        viewResolver.setOrder(1);
-        return viewResolver;
-    }
-
-
+    }*/
 
 }
