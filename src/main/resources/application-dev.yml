@@ -95,6 +95,7 @@ spring:
     suffix: .ftl
     template-loader-path: classpath:/ftl/
     check-template-location: true
+    template-resolver-order: 10
   thymeleaf:  # 模板引擎thymeleaf
     cache: false  # 热部署
     mode: HTML
