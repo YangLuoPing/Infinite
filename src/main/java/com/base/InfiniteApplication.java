@@ -25,8 +25,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * return EnableAutoConfiguration.class; 加载配置
  * 配置的核心文件 META-INF/spring.factories.（spring-boot-autoconfigure）
  */
-//, DataSourceAutoConfiguration.class
-@SpringBootApplication(exclude ={DruidDataSourceAutoConfigure.class} ) //排除 原生Druid的快速配置类。
+//, DataSourceAutoConfiguration.class  datasource 快速配置类
+//RedisAutoConfiguration.class,RedisRepositoriesAutoConfiguration.class  redis 快速配置类
+@SpringBootApplication(exclude = {DruidDataSourceAutoConfigure.class})
+//排除 原生Druid的快速配置类。
 @ServletComponentScan//druid监控页面是一个servlet，需要让SpingBoot支持servlet
 @EnableAsync //开启异步注解功能
 @EnableScheduling //开启基于注解的定时任务
@@ -34,8 +36,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableHasorWeb()   // 将 hasor-web 配置到 Spring 环境中，Dataway 的 UI 是通过 hasor-web 提供服务。
 public class InfiniteApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(InfiniteApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(InfiniteApplication.class, args);
+	}
 
 }

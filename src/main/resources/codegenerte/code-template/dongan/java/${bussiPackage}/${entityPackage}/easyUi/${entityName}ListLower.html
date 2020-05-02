@@ -1,0 +1,203 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="com.meritit.producemanager.util.DateUtils"%>
+<%@ page import="java.net.URLDecoder"%>
+<%
+	String path = request.getContextPath();
+    %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+	<link rel="stylesheet" type="text/css" href="<%=path%>/producemanager/js/jquery-easyui-1.4.4/themes/default/easyui-white.css"/> 
+	<link rel="stylesheet" type="text/css" href="<%=path%>/producemanager/js/jquery-easyui-1.4.4/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="<%=path%>/producemanager/js/jquery-easyui-1.4.4/demo.css">
+	<script type="text/javascript" src="<%=path%>/producemanager/js/jquery-easyui-1.4.4/jquery.min.js"></script>
+	<script type="text/javascript" src="<%=path%>/producemanager/js/jquery-easyui-1.4.4/jquery.easyui.min.js"></script>
+
+  </head>
+<body> 
+	<div class="easyui-layout" style="width:100%;height:100%;">
+			<div  id="term_seach" data-options="region:'north'" style="height:50px;"> 
+			 	<table width="100%" height="100%" >
+			      	<tr>
+<#list columns as po>
+	<#if po.fieldName !='id' && po_index <= tableVo.searchFieldNum>
+			          	<td width="20%" style="text-align:right">
+			            	${po.filedComment}：<input id="${po.fieldName}" name="${po.fieldName}" type="text" placeHolder="" class="locinput"/>
+			          	</td>
+	<#elseif po_index == 2>
+			          	<td width="20%" style="text-align:right">
+			            	${po.filedComment}：<input id="${po.fieldName}" name="${po.fieldName}" type="text" placeHolder="" class="locinput"/>
+			          	</td>
+	<#elseif po.fieldName !='id' && po_index < 5>
+				        <td width="20%" style="text-align:right">
+				            ${po.filedComment}：<input id="${po.fieldName}" name="${po.fieldName}" type="text" placeHolder="" class="locinput"/>
+				        </td>
+	<#elseif po.fieldName !='id' && po_index == 5>
+    			  	</tr>
+   					<tr>
+   						<td width="20%" style="text-align:right">
+				            ${po.filedComment}：<input id="${po.fieldName}" name="${po.fieldName}" type="text" placeHolder="" class="locinput"/>
+				        </td>
+	<#else>
+						<td width="20%" style="text-align:right">
+				            ${po.filedComment}：<input id="${po.fieldName}" name="${po.fieldName}" type="text" placeHolder="" class="locinput"/>
+				        </td>
+	</#if>
+</#list>
+				        <td style="text-align:left">
+				            <a href="javascript:;" class="locsearch" onclick="search1()" style="margin-left: 20%;">查询</a>
+				            <a href="javascript:;" class="locsearch" onclick="reset1()">重置</a>
+				            <a href="javascript:;" class="locsearch" onclick="$('#term_seach').hide();$('#es_search').show();">切换全局检索</a>
+				        </td>
+    				</tr>
+			    </table> 
+			</div>
+			<div id="es_search" data-options="region:'north'" style="height:50px;display:none;"> 
+			 	<table width="100%" height="100%" >
+			      <tr>
+			      	<td style="width:70%;text-align:right;">
+				        搜索内容:<input name="" id="query1"  type="text" placeHolder="" class="locinput" style="width:60%;"/>
+				     </td>
+				    <td>
+				     <a href="javascript:;" class="locsearch" onclick="esSearch()" style="margin-left: 10%;">查询</a>
+				        <a href="javascript:;" class="locsearch" onclick="reset1()">重置</a>
+				        <a href="javascript:;" class="locsearch" onclick="$('#es_search').hide();$('#term_seach').show();">切换精确查询</a>
+				    </td>
+			      </tr>
+			    </table> 
+			</div>
+			<div data-options="region:'center'">
+				<table id="dataListMx">  
+					<thead>
+						<tr id="theadId">
+						<!-- 表格内容 -->
+						</tr>
+					</thead>
+				</table>
+	</div>
+</div>
+<script type="text/javascript">
+var mxurl = path+'/common/cjzhbb_Cjzh_kshMingxi';
+var selectIdMx = NAMESPACE+"bdwjf_cdgxMingxi",
+$(function () {
+    loadData();
+});
+function search1() {
+
+    $('#dataListMx').datagrid('load', {
+        "selectId": selectIdMx,
+<#list columns as po>
+	<#if (po_index==columns?size-1) >
+		'${po.fieldName}':$('#${po.fieldName}').val()
+	<#else>
+		'${po.fieldName}':$('#${po.fieldName}').val(),
+	</#if>
+</#list>
+    });
+}
+function reset1() {
+    $('#query1').val('');
+<#list columns as po>
+	$('#${po.fieldName}').val();
+</#list>
+    loadData();
+}
+function esSearch() {
+    debugger;
+    var queryq = $('#query1').val();
+    $.ajax({
+        url: esPath1,
+        type: "GET",//jsonp只支持GET请求
+        data: {
+            "index": 'v_cjzh_cdgxmingxi',//对应的表或者视图名
+            "content": queryq,//全局搜素的字符
+            "page": 1,
+            "rows": 300,
+            //"lowerFlag": 'true',//返回的列明不传默认为大写，传值代表转小写
+            "params": JSON.stringify({
+                "TUOQIFOU": bdwjf_tuoqi != 'tuoqi' ? '' : '1',
+                "$in": { "CHENGZHICHEJIAN": chejian_names.toString() }
+            })
+        },
+        async: false,
+        dataType: "jsonp",
+        jsonp: "callBack",//传递给请求处理程序或页面的，用以获得jsonp回调函数名的参数名(一般默认为:callback)
+        //jsonpCallback:"backFun",//自定义的jsonp回调函数名称，默认为jQuery自动生成的随机函数名，jQuery会自动为你处理数据
+        success: function (data) {
+            $('#dataListMx').datagrid('loadData', data == null ? [] : data[0]);
+        },
+        error: function () {
+            //alert('fail');
+        }
+    });
+}
+function loadData() {
+    $('#dataListMx').datagrid({
+        width: '100%',
+        height: '100%',
+        loadMsg: '正在加载，请稍等...',
+        //style: { color: 'red' },
+        striped: true,
+        border: true,
+        fit: true,
+        url: mxurl,
+        singleSelect: false,//设置为true将只允许选择一行。
+        pagination: true,//设置true将在数据表格底部显示分页工具栏。  
+        rownumbers: true,//设置为true将显示行数
+        fitColumns: true,//设置为true将自动使列适应表格宽度以防止出现水平滚动。
+        striped: true,//设置为true将交替显示行背景。
+        nowrap: true,//设置为true，当数据长度超出列宽时将会自动截取。
+        pageNumber: 1,//当设置分页属性时，初始化分页码。
+        pageSize: 30,//当设置分页属性时，初始化每页记录数。
+        queryParams: {//当请求远程数据时，发送的额外参数。 
+            "selectId": selectIdMx
+        },
+        columns: [[
+<#list columns as po>
+	<#if (po_index==columns?size-1) >
+	    		  { field: '${po.fieldName}', title: '${po.filedComment}', width: 100,halign: 'center', align: 'center', formatter: showFormatter, sortable: true }
+	<#else>
+				  { field: '${po.fieldName}', title: '${po.filedComment}', width: 100,halign: 'center', align: 'center', formatter: showFormatter, sortable: true },
+	</#if>
+</#list>
+        ]]
+    });
+    //设置分页控件  
+    var p = $('#dataListMx').datagrid('getPager');
+    $(p).pagination({
+    	//layout: ['first', 'prev', 'next', 'last', 'refresh', 'export'],//显示的选项
+        pageSize: 30,//每页显示的记录条数，默认为10  
+        pageList: [10, 20, 30, 40, 50, 70, 90, 100],//可以设置每页记录条数的列表  
+        beforePageText: '第',//页数文本框前显示的汉字  
+        afterPageText: '页    共 {pages} 页',
+        displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录',
+        buttons: [{
+            iconCls: 'icon-export',
+            handler: function () {/* window.location.href=selfurl1; */
+                var field = $('#dataListMx').datagrid('getColumnFields');
+                var field1 = $('#dataListMx').datagrid("options").columns[0];
+                var title = [];
+                for (var i = 0; i < field1.length; i++) {
+                    title.push($('#dataListMx').datagrid("options").columns[0][i].title);
+                }
+                var posturl = mxurl;
+                var param = [{ name: "filename", value: windowTitle }, { name: "selectId", value: selectIdMx },{ name: "title", value: title }, { name: "field", value: field }];
+                Post(posturl, param);
+                return false;
+            }
+        }]
+    });
+}
+function showFormatter(value) {
+    if (value == undefined || value == 'null') {
+        return "";
+    } else {
+        return "<span title='" + value + "'>" + value + "</span>";
+    }
+}
+
+</script>
+	
+</body>
+</html>

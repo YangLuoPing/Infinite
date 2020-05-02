@@ -1,0 +1,45 @@
+说明：导出下方为模板使用的对象
+
+
+tableVo = {
+    "tableName": "${tableName!}",
+    "ftlDescription": "${ftlDescription!}",
+    "primaryKeyPolicy": "${primaryKeyPolicy!}",
+    "sequenceCode": "${sequenceCode!}",
+    "entityPackage": "${entityPackage!}",
+    "entityName": "${entityName!}",
+    "fieldRowNum": "${fieldRowNum!}",
+    "searchFieldNum": "${searchFieldNum!}",
+    "fieldRequiredNum": "${fieldRequiredNum!}"
+},
+originalColumns = [{
+    "fieldDbName": "SALARY_MONEY",
+    "fieldName": "salaryMoney",
+    "filedComment": "工资",
+    "fieldType": "decimal",
+    "fieldDbType": "decimal",
+    "classType": "inputxt",
+    "classType_row": "",
+    "optionType": "d",
+    "charmaxLength": "null",
+    "precision": "10",
+    "scale": "3",
+    "nullable": "Y",
+    "fieldLength": "null",
+    "fieldHref": "null",
+    "fieldValidType": "null",
+    "fieldDefault": "null",
+    "fieldShowType": "null",
+    "fieldOrderNum": "null",
+    "isKey": "null",
+    "isShow": "null",
+    "isShowList": "null",
+    "isQuery": "null",
+    "queryMode": "null",
+    "dictField": "null",
+    "dictTable": "null",
+    "dictText": "null"
+}]
+
+
+数据 Columns

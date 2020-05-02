@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${bussiPackage}.${entityPackage}.mapper.${entityName}Mapper">
+<!-- 用来封装数据的结果集映射 -->  
+  <resultMap id="${entityName}" type="${bussiPackage}.${entityPackage}.entity.${entityName}"> 
+<#list columns as po>
+	<#if po.fieldName == primaryKeyField>
+	<!-- 主键 -->
+	<id property="${po.fieldName?lower_case}" column="${po.fieldDbName}"/> 
+	<#else>
+	<result property="${po.fieldName?lower_case}" column="${po.fieldDbName}"/>
+	</#if>
+</#list>
+  </resultMap>
+	<!-- 查询方法，传入查询条件，返回结果映射 -->  
+  <select id="list" resultMap="${entityName}" parameterType="map">
+  	SELECT * from ${tableName}
+    <where>
+    <!-- 等值查询 -->
+<#list columns as po>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> AND ${po.fieldName?lower_case} = <#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse></if>
+</#list>
+    <!-- 模糊查询 -->
+<#list columns as po>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> AND ${po.fieldName?lower_case} like '%'||<#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse>||'%'</if>
+</#list>
+    </where>
+    <if test="sort!=null and sort!=''">
+		<#noparse>ORDER BY ${sort} ${order}</#noparse>
+	</if>
+  </select>
+	<!-- 查询方法，传入查询条件，返回结果映射 -->  
+  <select id="listMap" parameterType="map" resultType="map">
+  	SELECT * from ${tableName}
+    <where>
+    <!-- 等值查询 -->
+<#list columns as po>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> AND ${po.fieldDbName} = <#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse></if>
+</#list>
+    <!-- 模糊查询 -->
+<#list columns as po>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> AND ${po.fieldDbName} like '%'||<#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse>||'%'</if>
+</#list>
+    </where>
+    <if test="sort!=null and sort!=''">
+		<#noparse>ORDER BY ${sort} ${order}</#noparse>
+	</if>
+  </select>  
+	<!-- 更新方法，更新单条数据 -->  
+  <update id="update" parameterType="map">
+  UPDATE ${tableName}
+    <set> 
+<#list columns as po>
+	<#if (po_index==columns?size-1) && po.fieldName != primaryKeyField>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> ${po.fieldName?lower_case} = <#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse></if>
+	<#elseif po.fieldName != primaryKeyField>
+	<if test="${po.fieldName?lower_case}!=null and ${po.fieldName?lower_case}!=''"> ${po.fieldName?lower_case} = <#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse>,</if>
+	</#if>
+
+    </set>
+    <#if po.fieldName == primaryKeyField>
+    WHERE ${po.fieldName?lower_case} = <#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse>
+    </#if>
+</#list>
+  </update>  
+	<!-- 更新方法，更新单条数据 -->  
+  <update id="updateMap" parameterType="map">
+  UPDATE ${tableName}
+    <set>
+<#list columns as po>
+	<#if (po_index==columns?size-1) && po.fieldName != primaryKeyField>
+	<if test="${po.fieldDbName}!=null and ${po.fieldName?lower_case}!=''"> ${po.fieldDbName} = <#noparse>#{</#noparse>${po.fieldDbName}<#noparse>}</#noparse></if>
+	<#elseif po.fieldName != primaryKeyField>
+	<if test="${po.fieldDbName}!=null and ${po.fieldDbName}!=''"> ${po.fieldDbName} = <#noparse>#{</#noparse>${po.fieldDbName}<#noparse>}</#noparse>,</if>
+	</#if>
+
+    </set>
+    <#if po.fieldName == primaryKeyField>
+    WHERE ${po.fieldDbName} = <#noparse>#{</#noparse>${po.fieldDbName}<#noparse>}</#noparse>
+    </#if>
+</#list> 
+  </update> 
+  
+   <!-- 删除方法，根据Id批量删除数据 -->
+   <!-- WHERE ID IN  <foreach item="id" collection="list" open="(" separator="," close=")"><#noparse>#{</#noparse>id,jdbcType=VARCHAR}</foreach> -->
+  <delete id="delete">
+  DELETE FROM ${tableName} 
+<#list columns as po>
+  <#if po.fieldName == primaryKeyField>
+    WHERE ${po.fieldName?lower_case} IN 
+    <foreach item="${po.fieldName?lower_case}" collection="list" open="(" separator="," close=")"><#noparse>#{</#noparse>${po.fieldName?lower_case}<#noparse>}</#noparse></foreach> 
+  </#if>
+</#list>
+  </delete> 
+</mapper>
