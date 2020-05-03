@@ -9,7 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-public interface TElasticsearchIndexMapper  extends BaseMapper<TElasticsearchIndex>{
-    @Select("SELECT * FROM T_ELASTICSEARCH_INDEX WHERE DATANAME =#{dataname}")
-    List<TElasticsearchIndex> findAll(@Param("dataname") String dataname);
+public interface TElasticsearchIndexMapper extends BaseMapper<TElasticsearchIndex> {
+	@Select("SELECT * FROM T_ELASTICSEARCH_INDEX WHERE DATANAME =#{dataname}")
+	List<TElasticsearchIndex> findAll(@Param("dataname") String dataname);
+
 }

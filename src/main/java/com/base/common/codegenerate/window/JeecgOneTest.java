@@ -15,19 +15,19 @@ public class JeecgOneTest {
 	public static void main(String[] args) {
 		TableVo tableVo = new TableVo();
 		// 表名
-		tableVo.setTableName("t_scgl_pqj_resb");
+		tableVo.setTableName("USER_TAB_COLUMNS");
 		//序列号生成方式
 		tableVo.setPrimaryKeyPolicy("uuid");
 		// 实体的包名
-		tableVo.setEntityPackage("demo");
+		tableVo.setEntityPackage("elasticsearch");
 		//实体名
-		tableVo.setEntityName("Demo");
+		tableVo.setEntityName("userTabColumns");
 		// 行字段数目
 		tableVo.setFieldRowNum(1);
 		// 序列号 主键生成策略为sequence时，序列号不能为空！
 		tableVo.setSequenceCode("");
 		// 描述
-		tableVo.setFtlDescription("测试");
+		tableVo.setFtlDescription("表对应的类型");
 		try {
 			//工程存放位置
 			String projectPath = "D:/";

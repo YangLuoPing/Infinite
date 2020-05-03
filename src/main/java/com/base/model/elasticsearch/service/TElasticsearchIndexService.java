@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface TElasticsearchIndexService extends IService<TElasticsearchIndex> {
 
-    List<TElasticsearchIndex> findAll(int current, int size, QueryWrapper queryWrapper);
+	public List<TElasticsearchIndex> findAll(int current, int size, QueryWrapper queryWrapper);
 
-    public List<TElasticsearchIndex> findAllPage(int current, int size, QueryWrapper queryWrapper);
+	public List<TElasticsearchIndex> findAllPage(int current, int size, QueryWrapper queryWrapper);
+
+	public List<TElasticsearchIndex> findByDataName(String dataName);
 }
