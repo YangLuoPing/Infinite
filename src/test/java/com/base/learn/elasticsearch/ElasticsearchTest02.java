@@ -23,7 +23,7 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,6 +76,7 @@ public class ElasticsearchTest02 {
 		System.out.println(getResponse.getSourceAsString()); // 打印文档的内容
 		System.out.println(getResponse); // 返回的全部内容和命令式一样的
 	}
+
 
 	// 更新文档的信息
 	@Test

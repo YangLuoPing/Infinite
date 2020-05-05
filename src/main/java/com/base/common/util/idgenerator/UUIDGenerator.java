@@ -1,17 +1,15 @@
-package com.base.common.util;
+package com.base.common.util.idgenerator;
 
 import java.net.InetAddress;
 
 /**
- * 
  * @Author 张代浩
- *
  */
 public class UUIDGenerator {
 
 	/**
 	 * 产生一个32位的UUID
-	 * 
+	 *
 	 * @return
 	 */
 
@@ -22,6 +20,7 @@ public class UUIDGenerator {
 	}
 
 	private static final int IP;
+
 	static {
 		int ipadd;
 		try {

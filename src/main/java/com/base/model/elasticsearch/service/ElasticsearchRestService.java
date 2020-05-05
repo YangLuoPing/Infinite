@@ -6,19 +6,28 @@ import java.util.Map;
 
 public interface ElasticsearchRestService {
 	/**
+	 * 获取索引的信息
+	 *
+	 * @param host
+	 *
+	 * @return
+	 */
+	public List findAllIndices(String host);
+
+	/**
 	 * @param indexName
 	 * 		创建的索引
 	 *
 	 * @throws IOException
 	 */
-	public void createIndex(String dataName, String indexName) throws IOException;
+	public void createIndex(String dataName, String indexName);
 
 	/**
 	 * 创建所有的索引
 	 *
 	 * @throws IOException
 	 */
-	public void createAllIndex() throws IOException;
+	public void createAllIndex();
 
 	/**
 	 * 删除指定的索引
@@ -28,14 +37,14 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public void deleteIndex(String indexName) throws IOException;
+	public void deleteIndex(String indexName);
 
 	/**
 	 * 删除所有的索引
 	 *
 	 * @throws IOException
 	 */
-	public void deleteAllIndex() throws IOException;
+	public void deleteAllIndex();
 
 	/**
 	 * 查看索引是否存在
@@ -45,7 +54,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @return 是否存在
 	 */
-	public boolean isExistsIndex(String indexName) throws IOException;
+	public boolean isExistsIndex(String indexName);
 
 	/**
 	 * 添加文档
@@ -53,11 +62,9 @@ public interface ElasticsearchRestService {
 	 * @param dataName
 	 * @param indexName
 	 *
-	 * @return
-	 *
 	 * @throws IOException
 	 */
-	public boolean AddDocument(String dataName, String indexName) throws IOException;
+	public void addDocument(String dataName, String indexName);
 
 
 	/**
@@ -72,7 +79,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public boolean isDocument(String indexName, String id) throws IOException;
+	public boolean isDocument(String indexName, String id);
 
 	/**
 	 * 根据id获取文档
@@ -86,7 +93,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public Map getDocumentById(String indexName, String id) throws IOException;
+	public Map getDocumentById(String indexName, String id);
 
 	/**
 	 * 根据id获取文档
@@ -100,7 +107,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public boolean updateDocumentById(String indexName, String id, Map<String, Object> map) throws IOException;
+	public boolean updateDocumentById(String indexName, String id, Map<String, Object> map);
 
 	/**
 	 * 根据id删除文档
@@ -112,7 +119,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public boolean deleteDocumentById(String indexName, String id) throws IOException;
+	public boolean deleteDocumentById(String indexName, String id);
 
 	/**
 	 * 查询索引的全部文档
@@ -123,7 +130,7 @@ public interface ElasticsearchRestService {
 	 *
 	 * @throws IOException
 	 */
-	public List searchIndex(String indexName, Integer page, Integer size) throws IOException;
+	public List searchIndex(String indexName, Integer page, Integer size);
 
 	/**
 	 * 搜索
@@ -138,14 +145,14 @@ public interface ElasticsearchRestService {
 	 * 		页码
 	 * @param size
 	 * 		页大小
-	 * @param param
+	 * @param params
 	 * 		参数
 	 *
 	 * @return
 	 *
 	 * @throws IOException
 	 */
-	public List searchIndex(String indexName, String content, Map<String, Object> params, boolean lowerFlag, Integer page, Integer size) throws IOException;
+	public List searchIndex(String indexName, String content, Map<String, Object> params, boolean lowerFlag, Integer page, Integer size);
 
 	/**
 	 * 高亮搜索
@@ -162,12 +169,12 @@ public interface ElasticsearchRestService {
 	 * 		页码
 	 * @param size
 	 * 		页大小
-	 * @param param
+	 * @param params
 	 * 		参数
 	 *
 	 * @return
 	 *
 	 * @throws IOException
 	 */
-	public List searchHighlighterIndex(String indexName, String content, Map<String, Object> params, String higHlightField, boolean lowerFlag, Integer page, Integer size) throws IOException;
+	public List searchHighlighterIndex(String indexName, String content, Map<String, Object> params, String higHlightField, boolean lowerFlag, Integer page, Integer size);
 }

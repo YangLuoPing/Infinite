@@ -20,6 +20,14 @@ public class ElasticsearchConstant {
 	/**
 	 * 默认不写分页时的查询条数
 	 */
+	public static int JDBCSIZE = 100;
+	/**
+	 * 默认一次向es导入数据的条数
+	 */
+	public static int ESIMPSIZE = 50000;
+	/**
+	 * 默认不写分页时的查询条数
+	 */
 	public static int SIZE = 100;
 	/**
 	 * 是否多个高亮显示，默认为不高亮

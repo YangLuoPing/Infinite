@@ -35,9 +35,8 @@ public class TElasticsearchIndexServiceImpl extends ServiceImpl<TElasticsearchIn
 
 	@Override
 	public List<TElasticsearchIndex> findByDataName(String dataName) {
-		QueryWrapper<TElasticsearchIndex> queryWrapper = null;
+		QueryWrapper<TElasticsearchIndex> queryWrapper = new QueryWrapper<>();
 		if (dataName != null) {
-			queryWrapper = new QueryWrapper<>();
 			queryWrapper.in("dataname", dataName.toUpperCase(), dataName.toLowerCase());
 		}
 		queryWrapper.orderByAsc("dataname", "indexname");

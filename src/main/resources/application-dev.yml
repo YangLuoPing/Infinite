@@ -76,7 +76,7 @@ spring:
           username: producemanager
           password: merit
           driver-class-name: oracle.jdbc.driver.OracleDriver
-      p6spy: true # 启用p6spy相关配置,默认false,建议线上关闭。
+      p6spy: false # 启用p6spy相关配置,默认false,建议线上关闭。
     #配置监控统计拦截的filters，stat:监控统计、log4j：日志记录、wall：防御sql注入
     #如果允许时报错  java.lang.ClassNotFoundException: org.apache.log4j.Priority
     #则导入 log4j 依赖即可，Maven 地址：https://mvnrepository.com/artifact/log4j/log4j
@@ -121,6 +121,10 @@ management:
     web:
       exposure:
         include: metrics,httptrace
+  metrics:
+    export:
+      elastic:
+        host: http://localhost:9200
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:com/base/**/*Mapper.xml
@@ -133,7 +137,7 @@ mybatis-plus:
       logic-delete-field: deleted #全局逻辑删除字段值  有 @TableLogic 则以实体上的为准，忽略全局。 即先查找注解再查找全局，都没有则此表没有逻辑删除
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
-  type-enums-package: com.base.utils.dict
+  type-enums-package: com.base.common.util.dict
 # 启用 Dataway 功能（默认不启用）
 HASOR_DATAQL_DATAWAY: true
 # 开启 ui 管理功能（注意生产环境必须要设置为 false，否则会造成严重的生产安全事故）
@@ -143,16 +147,27 @@ HASOR_DATAQL_DATAWAY_API_URL: /api/
 # （可选）ui 的工作路径，只有开启 ui 管理功能后才有效
 HASOR_DATAQL_DATAWAY_UI_URL: /dataway-ui/
 
-
-
-
+elastic:
+  hostname: localhost
+  port: 9200 # 默认端口号
+  scheme: http
+  #  Seconds可以有值0-59或特殊字符, - * /。
+  #  Minutes可以有值0-59或特殊字符, - * /。
+  #  Hours可以有值0-23或特殊字符, - * /。
+  #  Day of month可以有值1-31或特殊字符, - * ? /。
+  #  Month可以有值1-12，JAN-DEC或特殊字符, - * /。
+  #  Day of week可以有值1-7，SUN-SAT或特殊字符, - * ? /。
+  # "0 0 0-4 1/1 * ? *" 四小时执行一次  "0 0 13,23 1/1 * ? *" 每天13,23点执行
+  #  秒   分   时     日   月   周几
+  #  0    *    *      *    *   MON-FRI
+  timingcron: "0 0/30 * * * ?" # quartz/Cron/Crontab表达式在线生成工具地址 http://www.bejson.com/othertools/cron/
+  initialDelay: 1000 # 毫秒
+  fixedDelay: 3600000
 project:
   uploadPath: ./file/
   imagePath: ./image/
   isDayType: false
-  es:
-    time: "0 0/30 * * * ? " # quartz/Cron/Crontab表达式在线生成工具地址 http://www.bejson.com/othertools/cron/
-    initialDelay: 1000 # 毫秒
+
 
 
 

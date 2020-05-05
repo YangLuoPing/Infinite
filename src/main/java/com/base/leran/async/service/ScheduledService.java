@@ -1,5 +1,6 @@
 package com.base.leran.async.service;
 
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,11 +34,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ScheduledService {
-    //秒 分 时 日   月   周几
-    //0 * * * * MON-FRI
-    //注意cron表达式的用法；
-    @Scheduled(cron = "0 0/30 * * * ? ")
-    public void timing() {
-        System.out.println("定时任务timing.....");
-    }
+	//秒 分 时 日   月   周几
+	//0 * * * * MON-FRI
+	//注意cron表达式的用法；
+	// fixedDelay = 5000 //上一次执行完毕时间点之后5秒再执行
+	//fixedDelayString = "5000" //上一次执行完毕时间点之后5秒再执行,只是使用字符串的形式
+	//fixedRate = 5000 //上一次开始执行时间点之后5秒再执行
+	//initialDelay=5000 //第一次延迟1秒后执行，之后按fixedRate的规则每5秒执行一次
+	@Scheduled(initialDelayString = "${elastic.initialDelay}", fixedDelayString = "${elastic.fixedDelay}")
+	public void timing() {
+		System.out.println("定时任务timing.....");
+	}
 }

@@ -27,7 +27,7 @@ public class IndexTest02 {
 	public void createindex() throws IOException {
 		elasticsearchRestService.deleteIndex("v_ext_scxt_erp_zhjcs");
 		elasticsearchRestService.createIndex("producemanager", "v_ext_scxt_erp_zhjcs");
-		elasticsearchRestService.AddDocument("producemanager", "v_ext_scxt_erp_zhjcs");
+		elasticsearchRestService.addDocument("producemanager", "v_ext_scxt_erp_zhjcs");
 	}
 
 	@Test
