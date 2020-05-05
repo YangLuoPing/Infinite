@@ -10,4 +10,8 @@ public interface QueryDataService {
 	public List queryProduceData(String tableName, Integer page, Integer size);
 
 	public Long queryProduceDataCount(String tableName);
+
+	public List queryProduceData(String tableName, String tabColumnstr, Integer page, Integer size);
+
+	public List queryTempoData(String tableName, String tabColumnstr, Integer page, Integer size);
 }

@@ -105,6 +105,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 	@Override
 	public void createIndex(String dataName, String indexName) {
 		List<UserTabColumns> tabColumns;
+		String tabColumnstr = "";
 		if ("TEMPO".equalsIgnoreCase(dataName)) {
 			tabColumns = userTabColumnsService.findTempoBytableName(indexName);
 		} else {
@@ -140,6 +141,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 				builder.startObject("properties");
 				{
 					for (int i = 0; i < tabColumns.size(); i++) {
+						tabColumnstr += tabColumns.get(i).getColumnName() + ",";
 						builder.startObject(tabColumns.get(i).getColumnName());
 						{
 							if (tabColumns.get(i).getDataType() == "DATE") {
@@ -163,7 +165,8 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 			// 客户端请求 createIndexResponse ，请求后获得响应
 			CreateIndexResponse indexResponse = client.indices().create(request, RequestOptions.DEFAULT);
 			System.out.println("索引" + indexResponse.index() + "创建成功！");
-			addDocument(dataName, indexName);// 添加文档
+			//addDocument(dataName, indexName);// 添加文档
+			addDocument(dataName, indexName, tabColumnstr.replace(",*$", ""));
 
 		} catch (IOException e) {
 			System.out.println("索引" + indexName + "创建失败！");
@@ -201,7 +204,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 	public void createAllIndex() {
 
 
-		// 获取需要删除的索引
+		// 获取需要创建的索引
 		List<TElasticsearchIndex> tableNameList = tElasticsearchIndexService.findByDataName(null);
 		for (int i = 0; i < tableNameList.size(); i++) {
 			String tableName = tableNameList.get(i).getIndexname();
@@ -281,6 +284,63 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 		return bool;
 	}
 
+	/**
+	 * 添加文档
+	 *
+	 * @param dataName
+	 * @param indexName
+	 * @param tabColumnstr
+	 */
+	public void addDocument(String dataName, String indexName, String tabColumnstr) {
+		BulkRequest bulkRequest = new BulkRequest();
+		bulkRequest.timeout("10m");
+		//BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+
+		List list = null;
+		try {
+			if ("TEMPO".equalsIgnoreCase(dataName)) {
+				Long len = queryDataService.queryTempoDataCount(indexName);
+				if (len > ElasticsearchConstant.ESIMPSIZE) {
+					int lenTemp = (int) Math.ceil(len / ElasticsearchConstant.ESIMPSIZE);
+					for (int i = 0; i < lenTemp; i++) {
+						list = queryDataService.queryTempoData(indexName, tabColumnstr, i + 1, ElasticsearchConstant.ESIMPSIZE);
+						impData(list, bulkRequest, indexName);
+					}
+					System.out.println("索引" + indexName + "数据导入成功");
+				} else {
+					list = queryDataService.queryTempoData(indexName, null, null);
+					impData(list, bulkRequest, indexName);
+					System.out.println("索引" + indexName + "数据导入成功");
+				}
+
+			} else {
+				Long len = queryDataService.queryProduceDataCount(indexName);
+				if (len > ElasticsearchConstant.ESIMPSIZE) {
+					int lenTemp = (int) Math.ceil(len / ElasticsearchConstant.ESIMPSIZE);
+					for (int i = 0; i < lenTemp; i++) {
+						list = queryDataService.queryProduceData(indexName, tabColumnstr, i + 1, ElasticsearchConstant.ESIMPSIZE);
+						impData(list, bulkRequest, indexName);
+					}
+					System.out.println("索引" + indexName + "数据导入成功");
+				} else {
+					list = queryDataService.queryProduceData(indexName, null, null);
+					impData(list, bulkRequest, indexName);
+					System.out.println("索引" + indexName + "数据导入成功");
+				}
+			}
+		} catch (Exception e) {// 查询对应的表数据出错
+			TBusinessLog tBusinessLog = new TBusinessLog();
+			tBusinessLog.setId(UUIDGenerator.generate());
+			tBusinessLog.setLogInfo(e.getMessage());
+			tBusinessLog.setBusinessType("elasticsearch");
+			tBusinessLog.setCreateTime(new Date(System.currentTimeMillis()));
+			tBusinessLogService.insert(tBusinessLog);
+			System.out.println(e.getMessage());
+			log.info(e.getMessage());
+		}
+
+	}
+
 	@Override
 	public void addDocument(String dataName, String indexName) {
 		BulkRequest bulkRequest = new BulkRequest();
@@ -294,8 +354,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 				if (len > ElasticsearchConstant.ESIMPSIZE) {
 					int lenTemp = (int) Math.ceil(len / ElasticsearchConstant.ESIMPSIZE);
 					for (int i = 0; i < lenTemp; i++) {
-						System.out.println("page:" + i + "size:" + ElasticsearchConstant.ESIMPSIZE + "导入的总数量：" + i * ElasticsearchConstant.ESIMPSIZE);
-						list = queryDataService.queryTempoData(indexName, i, ElasticsearchConstant.ESIMPSIZE);
+						list = queryDataService.queryTempoData(indexName, i + 1, ElasticsearchConstant.ESIMPSIZE);
 						impData(list, bulkRequest, indexName);
 					}
 				} else {
@@ -308,7 +367,6 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 				if (len > ElasticsearchConstant.ESIMPSIZE) {
 					int lenTemp = (int) Math.ceil(len / ElasticsearchConstant.ESIMPSIZE);
 					for (int i = 0; i < lenTemp; i++) {
-						System.out.println("page:" + i + 1 + "size:" + ElasticsearchConstant.ESIMPSIZE + "导入的总数量：" + (i + 1) * ElasticsearchConstant.ESIMPSIZE);
 						list = queryDataService.queryProduceData(indexName, i + 1, ElasticsearchConstant.ESIMPSIZE);
 						impData(list, bulkRequest, indexName);
 					}
@@ -320,11 +378,11 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 		} catch (Exception e) {// 查询对应的表数据出错
 			TBusinessLog tBusinessLog = new TBusinessLog();
 			tBusinessLog.setId(UUIDGenerator.generate());
-			tBusinessLog.setLogInfo(e.getMessage());
+			tBusinessLog.setLogInfo(indexName + ">>" + e.getMessage());
 			tBusinessLog.setBusinessType("elasticsearch");
 			tBusinessLog.setCreateTime(new Date(System.currentTimeMillis()));
 			tBusinessLogService.insert(tBusinessLog);
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			log.info(e.getMessage());
 		}
 
@@ -341,7 +399,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 		ActionListener<BulkResponse> listener = new ActionListener<BulkResponse>() {
 			@Override
 			public void onResponse(BulkResponse bulkResponse) {
-				//System.out.println("索引" + indexName + "的文档导入成功！");
+				System.out.println("索引" + indexName + "成功导入" + list.size() + "条记录！");
 			}
 
 			@Override
@@ -362,6 +420,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 				bulkRequest.remoteAddress();
 			}
 		}
+		client.bulkAsync(bulkRequest, RequestOptions.DEFAULT, listener);
 	}
 
 	@Override
@@ -657,7 +716,7 @@ public class ElasticsearchRestServiceImpl implements ElasticsearchRestService {
 					 */
 				}
 
-				if (params.size() > 0) {
+				if (params != null && params.size() > 0) {
 					for (Map.Entry<String, Object> param : params.entrySet()) {
 						if (param.getValue() != null || !("null".equals(param.getValue().toString()))) {
 							// key关键字为 "$in" 则代表为in "$in":{["chejian":"505","505车间"],["jixing":"jixng1","jixing2"]}
